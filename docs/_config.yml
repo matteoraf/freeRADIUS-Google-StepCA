@@ -2,6 +2,8 @@ title: freeRADIUS-Google-StepCA
 description: Set up 802.1X using Step CA as PKI, freeRADIUS and Google as IdP
 theme: just-the-docs
 
+baseurl: "/freeRADIUS-Google-StepCA"
+
 #color_scheme: dark
 
 url: https://matteoraf.github.io/freeRADIUS-Google-StepCA
