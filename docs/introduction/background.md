@@ -18,7 +18,7 @@ Most businesses rely on Microsoft AD as their IdP which couples with NDES (Micro
 FreeRADIUS, which is what we’ll use as a RADIUS server, isn’t very easy to understand. Most of the documentation is written inside the configuration files and, to me at least, it’s very hard to read and understand.
 So, I decided to put this together not to just give step-by-step instructions, but to try to add a bit more information on what each step does and why it works like that.
 
-Indeed, you shouldn’t follow this as a step-by-step guide to just follow without understanding what you’re doing, use this as a guidance but try to understand what you’re doing and why.
+Indeed, you shouldn’t use this as a step-by-step guide to just follow without understanding what you’re doing, use this as a guidance but try to understand what each piece does and why.
 
 
 Of course, some basic knowledge of what we are going to deal with is required.

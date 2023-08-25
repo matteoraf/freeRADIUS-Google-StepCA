@@ -20,7 +20,7 @@ Running step as a daemon is a recommended approach for production environments.
 
 Running in foreground is ok for testing and debugging, but once you’re ready to deploy, you should really go the systemd way.
 
-The guys at smallstep already explained everything [on the documentation](https://smallstep.com/docs/step-ca/certificate-authority-server-production/#running-step-ca-as-a-daemon), I will just copy-paste everything here for convenience.
+The guys at smallstep already explained everything [on the documentation](https://smallstep.com/docs/step-ca/certificate-authority-server-production/#running-step-ca-as-a-daemon), I will just copy-paste some steps here for convenience.
 
 ## Add a service user for the CA
 

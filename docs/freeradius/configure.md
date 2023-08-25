@@ -110,7 +110,7 @@ You can delete (or comment out) all other eap types (md5, pwd, gtc, ecc). Just l
 
 The next thing we have to do is to configure some tls details.
 
-We need to tell the module where our server certificate and key are located and what is the password to decrypt the key (we set it within /etc/freeradius/certs/server.cnf).
+We need to tell the module where our server certificate and key are located and what is the password to decrypt the key.
 
 By default, freeradius uses the same file (server.pem) to store both the certificate and the key.
 

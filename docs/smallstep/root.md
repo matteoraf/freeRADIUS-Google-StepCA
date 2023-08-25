@@ -24,7 +24,7 @@ You’re free to use whatever you prefer as your root CA, it can even be a compl
 
 Let’s start, here’s a list of the steps involved:
 
-1. Install the step CLI tool (see above)
+1. Install the step CLI tool (see previous step)
 2. Create the template for our root certificate
 3. Generate the certificate and the private key
 4. Backup the private key and the certificate
@@ -32,7 +32,10 @@ Let’s start, here’s a list of the steps involved:
 
 ## Create the template for our root certificate
 
-Ref: [Configure step-ca with an RSA certificate chain](https://smallstep.com/docs/tutorials/rsa-chain/#instructions)
+{: .ref }
+[Configure step-ca with an RSA certificate chain](https://smallstep.com/docs/tutorials/rsa-chain/#instructions)
+
+Run this command to create the file:
 
 ```sh
 {% raw %}
@@ -74,7 +77,8 @@ The last bit, as explained within the link at the beginning of this chapter, tel
 
 ## Generate root CA Certificate
 
-Ref: [step certificate create](https://smallstep.com/docs/step-cli/reference/certificate/create/#options)
+{: .ref }
+[step certificate create](https://smallstep.com/docs/step-cli/reference/certificate/create/#options)
 
 Let’s first put our very complex password (usa a password manager or _[/dev/urandom](https://cjbarker.com/blog/creating-high-entropy-passwords-on-linux/)_ to generate it), which will be used to encrypt the private key, on a file (eg. _password-file.txt_). We can then move this file to our CA and feed it to the step tool as follows.
 

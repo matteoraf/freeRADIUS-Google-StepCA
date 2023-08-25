@@ -79,7 +79,7 @@ step ca bootstrap --ca-url [CA URL] --fingerprint [CA fingerprint]
 
 Head back to your intermediate CA and create the _$STEPPATH/templates/certs/x509_ directory. 
 
-When you’re into the selected directory, run:
+When you’re into the just created directory, run:
 ```sh
 {% raw %}
 cat <<EOF > server_leaf.tpl
@@ -98,7 +98,7 @@ EOF
 {% endraw %}
 ```
 
-Notice that we leave both the serverAuth and clientAuth keys, otherwise we won’t be able to renew this cert as the ACME client will use that same cert to authenticate as a CLIENT to the ACME server. If we only authorize this as a server certificate, the ACME server will refuse to establish a TLS connection with the client and won’t renew the certificate.
+Notice that we add both the serverAuth and clientAuth keys, otherwise we won’t be able to renew this cert as the ACME client will use that same cert to authenticate as a CLIENT to the ACME server. If we only authorize this as a server certificate, the ACME server will refuse to establish a TLS connection with the client and won’t renew the certificate.
 
 To know more about the policyIdentifiers object that we added, read [here](https://github.com/FreeRADIUS/freeradius-server/blob/master/raddb/certs/xpextensions).
 
@@ -200,7 +200,7 @@ ExecStartPost=/usr/bin/env sh -c "! systemctl --quiet is-active %i.service || sy
 {% endraw %}
 ```
 
-In case your files are in a different directory or have a different name, adjust the file accordingly. Be sure to check STEPPATH as well, in my case it was in my home directory.
+In case your files are in a different directory or have a different name, adjust the file accordingly. Be sure to check $STEPPATH as well, in my case it was still pointing at the .scep/ folder in my home dir.
 
 The reason why we are restarting the freeradius service is to pick up the new certificate. A simple reload (SIGHUP) won’t load the certificate.
 

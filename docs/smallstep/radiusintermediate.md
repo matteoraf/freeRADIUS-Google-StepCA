@@ -178,7 +178,7 @@ Now it’s time to configure active revocation.
 {: .ref }
 [Enable active revocation on your intermediate ca](https://smallstep.com/docs/step-ca/certificate-authority-server-production/#enable-active-revocation-on-your-intermediate-ca) &lt;- this doc is outdated, you can find more details [here](https://github.com/smallstep/certificates/discussions/1422) while we wait for it to be updated
 
-We have already set in the intermediate ca template, our CRL distribution point at "[http://crl.example.com/crl](http://crl.example.com/crl/ca.crl)".
+We have already set in the intermediate ca template, our CRL distribution point at "[http://ca.example.com/crl](http://ca.example.com/crl)".
 
 The only thing you need to do, in order to enable the CRL, is to edit your ca.json file and add the following configuration:
 
@@ -203,6 +203,7 @@ Check [this post](https://github.com/smallstep/certificates/issues/1423#issuecom
 
 ## Run your CA
 
+This is as easy as:
 ```sh
 {% raw %}
 step-ca $(step path)/config/ca.json

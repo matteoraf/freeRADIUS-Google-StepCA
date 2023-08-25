@@ -164,7 +164,7 @@ In case your SCEP client uses HTTP (and does not support HTTPS), we need to add 
 
 This is not a big deal, since all PKIOperations messages are encrypted, but it’s good to have another layer of encryption on top if you can afford it.
 
-```json
+```
  {% raw %}
         ...
         "insecureAddress": ":8080",
@@ -174,15 +174,15 @@ This is not a big deal, since all PKIOperations messages are encrypted, but it�
 
 Let’s now create a template for our SCEP profile
 
-```json
+```
 {% raw %}
 {
 	"subject": {
-	"commonName": {{ toJson .Subject.CommonName }},
-	"country": {{ toJson .country }},
-	"organization": {{ toJson .organization }}
-       },
-       "emailAddresses": {{ toJson .Insecure.CR.EmailAddresses }},
+    "commonName": {{ toJson .Subject.CommonName }},
+    "country": {{ toJson .country }},
+    "organization": {{ toJson .organization }}
+  },
+  "emailAddresses": {{ toJson .Insecure.CR.EmailAddresses }},
 	"sans": {{ toJson .SANs }},
 	"keyUsage": ["keyEncipherment", "digitalSignature"],
 	"extKeyUsage": ["clientAuth"]
@@ -206,8 +206,8 @@ If you want to manually edit config, here’s the schema:
     "x509": {
       "templateFile": "templates/certs/x509/default_scep_leaf.tpl",
       "templateData": {
-        "organization": Corp,
-        "country": US,
+        "organization": "Corp",
+        "country": "US",
       }
     },
 {% endraw %}
