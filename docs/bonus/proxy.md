@@ -50,17 +50,20 @@ In case you decide to use the internal one, just don’t forget to put the finge
 Creating a new CA it’s as easy as follows:
 
 Create the required directories
- ```sh
+
+```sh
 scepproxy ca -init -depot /etc/scepproxy/depot
 ```
 
 Init the CA
- ```sh
+
+```sh
 scepproxy ca -init -depot /etc/scepproxy/depot
 ```
 
 As you can see we first create the directory where to save the CA key pair and then we init it. You can of course add additional details, just run the following command to get some details
- ```sh
+
+```sh
 scepproxy ca --help
 ```
 
