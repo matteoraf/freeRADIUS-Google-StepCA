@@ -1,0 +1,15 @@
+# 
+# This jail enables the filtering
+# This file must be placed in /etc/fail2ban/ directory
+# Use the "dummy" action for testing
+# This will just write the banned/unbanned IPs to /var/log/fail2ban.log 
+# Once you're ready, comment it out and uncomment the cloudflare line 
+# Don't forget to configure your API user/token in /etc/fail2ban/action.d/cloudflare.conf
+#
+#
+[scep-daemon]
+enabled = true
+filter = scep-daemon
+logpath = /var/log/syslog
+action = dummy
+#action = cloudflare
