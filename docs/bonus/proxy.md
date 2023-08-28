@@ -109,7 +109,9 @@ chown -R scepproxy:scepproxy /etc/scepproxy
 {: .no_toc }
 
 Create a */etc/systemd/system/scepproxy.service* unit file and add the content of [this](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/scepproxy.service) file (yes, I just took step-ca’s own file and changed some bits).
-You’ll have to create a ***config.env*** file and place it in the */etc/scepproxy/* directory
+
+You’ll have to create a ***config.env*** file and place it in the */etc/scepproxy/* directory.
+
 You can see a sample config.env file [here](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/config.env), adjust it according to your needs.
 
 
