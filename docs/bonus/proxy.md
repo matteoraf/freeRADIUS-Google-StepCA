@@ -52,7 +52,7 @@ Creating a new CA it’s as easy as follows:
 Create the required directories
 
 ```sh
-scepproxy ca -init -depot /etc/scepproxy/depot
+mkdir /etc/scepproxy && mkdir /etc/scepproxy/depot
 ```
 
 Init the CA
@@ -74,38 +74,47 @@ For debian, you just need to put your root public key in the */usr/share/ca-cert
 
 ## Setup a server certificate using ACME (let’s encrypt is fine) and renewal
 We want to expose our proxy endpoint using https. We could have avoided this, since the SCEP messages are already encrypted, but this way we add an additional layer of encryption which isn’t a bad thing.
+
 Unfortunately, we cannot use a certificate signed with our internal CA, because Cloudflare wouldn’t trust it, so we’d need to use either a public trusted CA (like letsencrypt) or use a [Cloudflare signed certs](https://developers.cloudflare.com/ssl/origin-configuration/origin-ca/).
-I’d rather go with let’s encrypt, as it is easier to handle renewal. So just go get one of the many ACME clients available and set it up to get and renew a certificate for your domain.
+
+I’d rather go with let’s encrypt, as it makes it easier to handle renewals. So just go get one of the many ACME clients available and set it up to get and renew a certificate for your domain.
 I won’t go into much detail about this, I believe that if you got to this point, you already know how to set this up.
 
 ## Set up the proxy to run as a service
 
 Alright, this is very similar to what we’ve done with step-ca before.
 
-1. Add a service user for the CA
+### Add a service user for the CA
+{: .no_toc }
 
 ```sh
 useradd --system --home /etc/scepproxy --shell /bin/false scepproxy
 ```
 
-2. Give the scepproxy binary low port-binding capabilities
+### Give the scepproxy binary low port-binding capabilities
+{: .no_toc }
 
 ```sh
 setcap CAP_NET_BIND_SERVICE=+eip $(which scepproxy)
 ```
 
-3. Set the scepproxy user as the owner of your CA configuration directory:
+### Set the scepproxy user as the owner of your CA configuration directory:
+{: .no_toc }
+
 ```sh
 chown -R scepproxy:scepproxy /etc/scepproxy
 ```
 
+### Configure Systemd
+{: .no_toc }
 
-4. Create a */etc/systemd/system/scepproxy.service* unit file and add the content of [this](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/scepproxy.service) file (yes, I just took step-ca’s own file and changed some bits).
+Create a */etc/systemd/system/scepproxy.service* unit file and add the content of [this](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/scepproxy.service) file (yes, I just took step-ca’s own file and changed some bits).
 You’ll have to create a ***config.env*** file and place it in the */etc/scepproxy/* directory
 You can see a sample config.env file [here](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/config.env), adjust it according to your needs.
 
 
-5. Enable and start the service
+### Enable and start the service
+{: .no_toc }
 
 ```sh
 # Reload the systemd unit files
@@ -124,13 +133,14 @@ I won’t go into too much detail about fail2ban. It’s been around for a long 
 I will just point out the configuration that we need to make it work.
 
 We’ll need to configure a filter, a jail and an action.
+
 To briefly explain this, the **jail** is where we tell fail2ban where to look for logs, what **filter** to use to identify logs that we care about, what **action** to execute and when to execute it.
 
 You can find a [filter](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/fail2ban/scep-daemon.conf) and a [jail](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scep-proxy/fail2ban/jail.local) sample file in the git repo. I put instructions and explanations in the comments. 
 
 ## Set up with Cloudflare
 I’ll just spend a couple more words on the cloudflare action instead.
-The included [cloudflare.conf](https://github.com/fail2ban/fail2ban/blob/master/config/action.d/cloudflare.conf) applies the IP ban at the user level, that means that it’ll apply to all zones/sites that you have under your account.
+The included [cloudflare.conf](https://github.com/fail2ban/fail2ban/blob/master/config/action.d/cloudflare.conf) applies the IP ban at the user level, that means that it’ll apply the ban to all zones/sites that you have under your account.
 In order to only apply to a specific zone, you can edit the [_cf_api_url](https://github.com/fail2ban/fail2ban/blob/bcaf1e714e7a9006677f841af0f3802a3b5419ca/config/action.d/cloudflare.conf#L67C52-L67C56) variable from this:
 
 `https://api.cloudflare.com/client/v4/user/firewall/access_rules/rules`
@@ -140,7 +150,7 @@ to this (add your own ZONE_ID):
 `https://api.cloudflare.com/client/v4/zones/ZONE_ID/firewall/access_rules/rules`
  
 One more thing that you need to do, is to have a file containing the list of subnets which Cloudflare uses.
-Luckily for us, Cloudflare publishes it’s IP list at the following two endpoints:
+Luckily for us, Cloudflare publishes its IP list at the following two endpoints:
 
 https://www.cloudflare.com/ips-v4
 
