@@ -10,4 +10,4 @@ nav_order: 4
 
 ---
 
-I will try to put together on the GitHub repo some of the templates and config files that are listed in the document.
+Check out the [Github repo](https://github.com/matteoraf/freeRADIUS-Google-StepCA) connected with this docs, you'll find some templates and other sample configuration files for the stuff that we went through.
