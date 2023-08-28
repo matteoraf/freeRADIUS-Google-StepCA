@@ -8,6 +8,12 @@ nav_order: 2
 # Proxying SCEP
 {: .no_toc }
 
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
 ---
 
 If, for some (good) reason, you don’t want to expose your CA endpoint directly or you need to have a single CA but you want to make it easily accessible to multiple local infrastructures, you can decide to rely on a Registration Authority.
