@@ -1,0 +1,210 @@
+server default {
+
+listen {
+	type = auth
+	ipaddr = *
+	port = 0
+	limit {
+	      max_connections = 16
+	      lifetime=0
+	      idle_timeout = 30
+	}
+}
+
+#
+#  This second "listen" section is for listening on the accounting
+#  port, too.
+#
+listen {
+	ipaddr = *
+#	ipv6addr = ::
+	port = 0
+	type = acct
+#	interface = eth0
+#	clients = per_socket_clients
+
+	limit {
+#		max_pps = 0
+#		idle_timeout = 0
+#		lifetime = 0
+#		max_connections = 0
+	}
+}
+
+authorize {
+	filter_username
+	preprocess
+	auth_log
+
+	#
+	#  Split up user names in the form user@domain
+	#
+	split_username_nai
+
+	#
+	#  Check the authentication cache to see if this user
+	#  recently sucessfully authenticated
+	#
+	update control {
+		&Cache-Status-Only := 'yes'
+	}
+	cache_auth_accept
+
+	#
+	#  If there's a cached User-Name / User-Password which matches
+	#  what the user sent here, then the user has been
+	#  authenticated.  We can then avoid interacting with Google's
+	#  LDAP server, which significantly improves the performance
+	#  of user authentication.
+	#
+	if (notfound) {
+		ldap_google
+		if (updated) {
+			cache_auth_accept
+		}
+	}
+
+	if (notfound) {
+		reject
+	}
+
+    #
+    #  This is an additional check on the user domain
+    #  You can skip it if you don't need it or you can
+    #  adapt this to your needs
+    #  
+	if (&Stripped-User-Domain != 'mydomain.com') {
+		reject
+	}
+
+	eap {
+		ok = return
+		updated = return
+	}
+}
+
+
+#  Authentication.
+
+authenticate {
+	#
+	#  Allow EAP authentication.
+	eap
+}
+
+
+#
+#  Pre-accounting.  Decide which accounting type to use.
+#
+preacct {
+	preprocess
+
+	#
+	#  Ensure that we have a semi-unique identifier for every
+	#  request, and many NAS boxes are broken.
+	acct_unique
+}
+
+#
+#  Accounting.  Log the accounting data.
+#
+accounting {
+	detail
+
+	#  Filter attributes from the accounting response.
+	attr_filter.accounting_response
+}
+
+
+session {
+}
+
+
+#  Post-Authentication
+post-auth {
+
+	#
+	#  Reject packets where User-Name != TLS-Client-Cert-Common-Name
+	#  There is no reason for users to lie about their names.
+	#
+	#  In general, User-Name == EAP Identity == TLS-Client-Cert-Common-Name
+	#
+	verify_tls_client_common_name
+
+	#
+	#  Retrieve and update cached info
+	#
+	cache_auth_accept
+
+	#
+	#  Update reply with VLAN information
+	#
+	update reply {
+                Tunnel-Type := 13
+                Tunnel-Medium-Type := 6
+		# In case no VLAN is assigned from ldap or from cahce, we assign a guest VLAN (100 in this case)
+		&reply:Tunnel-Private-Group-ID = "%{%{control:Tunnel-Private-Group-Id}:-100}"
+	}
+
+	#
+	#  If there is no Stripped-User-Name in the request, AND we have a client cert,
+	#  then create a Stripped-User-Name from the TLS client certificate information.
+	#
+	if (&EAP-Message && !&Stripped-User-Name && &TLS-Client-Cert-Serial) {
+		update request {
+			&Stripped-User-Name := "%{%{TLS-Client-Cert-Subject-Alt-Name-Email}:-%{%{TLS-Client-Cert-Common-Name}:-%{TLS-Client-Cert-Serial}}}"
+		}
+	}
+
+	#  If both session-state and reply contain a User-Name attribute, remove
+	#  the one in the reply if it is just a copy of the one in the request, so
+	#  we don't end up with two User-Name attributes.
+
+	if (session-state:User-Name && reply:User-Name && request:User-Name && (reply:User-Name == request:User-Name)) {
+		update reply {
+			&User-Name !* ANY
+		}
+	}
+	update {
+		&reply: += &session-state:
+	}
+
+	#  Remove reply message if the response contains an EAP-Message
+	remove_reply_message_if_eap
+
+	#
+	#  Access-Reject packets are sent through the REJECT sub-section of the
+	#  post-auth section.
+	#
+	Post-Auth-Type REJECT {
+		attr_filter.access_reject
+		eap
+		remove_reply_message_if_eap
+	}
+
+	#
+	#  Filter access challenges.
+	#
+	Post-Auth-Type Challenge {
+#		remove_reply_message_if_eap
+#		attr_filter.access_challenge.post-auth
+	}
+
+
+	#
+	#  If the client sends EAP-Key-Name in the request,
+	#  then echo the real value back in the reply.
+	#
+	if (EAP-Key-Name && &reply:EAP-Session-Id) {
+		update reply {
+			&EAP-Key-Name := &reply:EAP-Session-Id
+		}
+	}
+}
+
+pre-proxy {
+}
+
+post-proxy {
+}
+}
