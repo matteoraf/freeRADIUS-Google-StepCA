@@ -27,14 +27,16 @@ The last downside, is that while this should be quite easy for MacOS, I believe 
 ## SCEP Renewal
 
 So, since Apple [doesn't support](https://support.apple.com/en-us/HT204836) automatic renewal for SCEP certificates, we'll have to think a way to automate this.
-I haven't done this yet, but I'm going to in the near future. Let me just write down a couple of notes.
 
-The `profiles -W <profile_identifier>` command allowed to renew certificates pushed with the specified profile.
-This command, while still available on Ventura, may become deprecated soon.
-
-The new version of the command is `profiles -type "configuration" -identifier <profile_identifier>` 
+The command to renew a SCEP certificate pushed with a configuration profile is `profiles renew -type configuration -identifier <profile_identifier>` 
 
 The problem with this command is that the old profile will be left in the keychain, no cleanup is done.
 So we need to work on something that will clean up expired or soon-to-expire certificates.
 
-There's [this post](https://community.jamf.com/t5/jamf-pro/ad-certificate-auto-renewal-workflow/td-p/155165) on Jamf Nation forum which has some good ideas on how to track expiring certificates, trigger renewal and clean up old profiles. This may be a good starting point.
+So, I came up with a script that checks for certificate approaching expiration, renews it and cleans up the leftover one(s).
+
+You can find this script [here](https://github.com/matteoraf/freeRADIUS-Google-StepCA/blob/main/scripts/scep_renew_cleanup.sh).
+
+Just set the  `PROFILE_IDENTIFIER`, `EXP_TRESHOLD` and `CN` variables and you're ready to go.
+
+You can then push this script to devices at regular intervals with your MDM or just set up a cron on your device if you don't have access to an MDM platform.
