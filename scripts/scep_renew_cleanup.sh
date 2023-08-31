@@ -26,8 +26,8 @@ now=$(date "+%s")
 ## Common name
 ## If your MDM can push the script and add variables, just put here the variable name that you used
 ## With Mosyle for example, if I need to use the user email for 1:1 devices, I can set CN=%Email%
-## If you don't have this capability with your MDM but all your 1:1 devices are getting the user email as a CN, you can just set CN="@yourdomain.com"
-## Another option would be to use the device UUID if devices are not 1:1, in that case CN=$(ioreg -ad2 -c IOPlatformExpertDevice | plutil -extract IORegistryEntryChildren.0.IOPlatformUUID raw -)
+## If you don't have this capability with your MDM but all your 1:1 devices are getting the user email as a CN and that is the only cert that you're pushing, you can just set CN="@yourdomain.com"
+## Another option would be to use the device UUID as the Common Name if devices are not 1:1, in that case CN=$(ioreg -ad2 -c IOPlatformExpertDevice | plutil -extract IORegistryEntryChildren.0.IOPlatformUUID raw -)
 ##
 CN="@yourdomain.com"
 
@@ -100,7 +100,6 @@ if [ $expDiff -le $EXP_TRESHOLD ];
 then
     echoFunc "Expiration treshold was reached, attempting to renew"
     res=$(profiles renew -type configuration -identifier $PROFILE_IDENTIFIER)
-    #echoFunc "Certificate Renewed"
     echoFunc "$res"
 fi 
 
