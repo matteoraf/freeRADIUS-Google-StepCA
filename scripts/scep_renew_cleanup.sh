@@ -125,7 +125,6 @@ if [ $CertCount > 1 ]; then
         CertExp=$(security find-certificate -apZ -c $CN "/Library/Keychains/System.keychain" | sed -n 'H; /^SHA-1/h; ${g;p;}' | openssl x509 -noout -enddate 2>/dev/null | cut -f2 -d=)
         dateformat=$(date -j -f "%b %d %T %Y %Z" "$CertExp" "+%b %d %Y")
         echoFunc "Computer certificate expiration: $dateformat"
-        #/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper -windowType utility -button1 "OK" -defaultButton 1 -icon /Applications/Utilities/Keychain Access.app/Contents/Resources/AppIcon.icns -timeout 30 -title "New Machine Certificate" -description "Your new machine certificate expires on: $dateformat. Please make note of this. This window will close in 30 seconds."
 fi
 
 echoFunc "Exit code: $?"
